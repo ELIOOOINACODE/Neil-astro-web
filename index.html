@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso Estelar - Neil Astro 🌙⭐</title>
+    
+    <!-- Librería para convertir Markdown (asteriscos y listas) a HTML bonito -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a1128 0%, #1c2541 50%, #001f3f 100%);
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* 🔐 Pantalla de Login */
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            background: rgba(10, 17, 40, 0.85);
+            backdrop-filter: blur(15px);
+            border: 2px solid #ffcc00;
+            border-radius: 24px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 0 35px rgba(255, 204, 0, 0.25), 0 10px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        .login-card h2 {
+            color: #ffcc00;
+            margin-bottom: 10px;
+        }
+
+        .login-card p {
+            color: #a0c4ff;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: #ffcc00;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group select, .form-group input {
+            width: 100%;
+            background: #0b132b;
+            color: #ffffff;
+            border: 1px solid #00b4d8;
+            border-radius: 10px;
+            padding: 10px 14px;
+            outline: none;
+            font-size: 0.95rem;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: #ffcc00;
+            box-shadow: 0 0 10px rgba(255, 204, 0, 0.3);
+        }
+
+        .btn-ingresar {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #ffcc00, #ff9900);
+            color: #0a1128;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(255, 204, 0, 0.4);
+        }
+
+        .btn-ingresar:hover {
+            transform: scale(1.02);
+            background: linear-gradient(135deg, #ffe066, #ffaa00);
+        }
+
+        #errorMsg {
+            color: #ff4d6d;
+            font-size: 0.85rem;
+            margin-top: 10px;
+        }
+
+        /* 🌌 Contenedor del Chat (Horizontal en PC, Vertical en Móvil) */
+        .app-container {
+            display: none;
+            flex-direction: row;
+            width: 100%;
+            max-width: 950px;
+            height: 620px;
+            background: rgba(10, 17, 40, 0.75);
+            backdrop-filter: blur(15px);
+            border: 2px solid #ffcc00;
+            border-radius: 24px;
+            box-shadow: 0 0 35px rgba(255, 204, 0, 0.25), 0 10px 40px rgba(0, 0, 0, 0.6);
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 320px;
+            background: linear-gradient(180deg, rgba(28, 37, 65, 0.9), rgba(11, 19, 43, 0.9));
+            border-right: 1px solid rgba(255, 204, 0, 0.3);
+            padding: 25px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            text-align: center;
+        }
+
+        .avatar-box {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #ffcc00, #ff9900);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.8rem;
+            box-shadow: 0 0 20px #ffcc00;
+        }
+
+        .status-dot {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 16px;
+            height: 16px;
+            background: #00f5d4;
+            border: 3px solid #0a1128;
+            border-radius: 50%;
+        }
+
+        .sidebar h2 {
+            color: #ffcc00;
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .sidebar p {
+            color: #a0c4ff;
+            font-size: 0.88rem;
+        }
+
+        .user-badge {
+            width: 100%;
+            background: rgba(0, 119, 182, 0.2);
+            border: 1px solid #00b4d8;
+            border-radius: 14px;
+            padding: 12px;
+            color: #ffcc00;
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: rgba(10, 17, 40, 0.5);
+        }
+
+        .chat-header {
+            padding: 15px 20px;
+            background: rgba(28, 37, 65, 0.6);
+            border-bottom: 1px solid rgba(255, 204, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chat-header h3 {
+            color: #3a86ff;
+            font-size: 1.1rem;
+        }
+
+        .chat-box {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            scroll-behavior: smooth;
+        }
+
+        .chat-box::-webkit-scrollbar {
+            width: 6px;
+        }
+        .chat-box::-webkit-scrollbar-thumb {
+            background: #ffcc00;
+            border-radius: 10px;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        .user-message {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #0077b6, #0096c7);
+            color: #ffffff;
+            border: 1px solid #ffcc00;
+            border-bottom-right-radius: 4px;
+        }
+
+        .neil-message {
+            align-self: flex-start;
+            background: rgba(255, 204, 0, 0.1);
+            color: #fffbe0;
+            border: 1px solid #ffcc00;
+            border-bottom-left-radius: 4px;
+        }
+
+        /* 🎨 Estilos para la respuesta formateada de Neil */
+        .contenido-neil {
+            margin-top: 6px;
+        }
+        .contenido-neil p {
+            margin: 6px 0;
+        }
+        .contenido-neil ul, .contenido-neil ol {
+            padding-left: 20px;
+            margin: 8px 0;
+        }
+        .contenido-neil li {
+            margin-bottom: 4px;
+        }
+        .contenido-neil strong {
+            color: #ffcc00; /* Las palabras en negrita resaltarán en amarillo bonito */
+        }
+
+        .input-area {
+            padding: 15px 20px;
+            display: flex;
+            gap: 10px;
+            background: rgba(11, 19, 43, 0.8);
+            border-top: 1px solid rgba(255, 204, 0, 0.2);
+        }
+
+        input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #00b4d8;
+            border-radius: 12px;
+            background: #0b132b;
+            color: white;
+            outline: none;
+            font-size: 0.95rem;
+        }
+
+        button.btn-enviar {
+            padding: 12px 22px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #ffcc00, #ff9900);
+            color: #0a1128;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button.btn-enviar:hover {
+            transform: scale(1.04);
+        }
+
+        /* 📱 Vista para Teléfonos */
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+                height: 92vh;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                padding: 15px;
+                flex-direction: row;
+                justify-content: space-between;
+                text-align: left;
+            }
+            .avatar { width: 50px; height: 50px; font-size: 1.5rem; }
+            .sidebar p { display: none; }
+            .user-badge { width: auto; padding: 6px 10px; font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 🔐 PANTALLA DE ACCESO (LOGIN) -->
+    <div class="login-card" id="loginScreen">
+        <h2>🌙 Neil Astro ⭐</h2>
+        <p>Introduce tus credenciales estelares para entrar a la estación.</p>
+        
+        <div class="form-group">
+            <label>Selecciona tu Usuario:</label>
+            <select id="loginUser">
+                <option value="Papi Damián">Papi Damián 👑</option>
+                <option value="Zavala Deidad">Zavala Deidad 👨‍🏫</option>
+                <option value="Invitado Espacial">Invitado / Amigo 🚀</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Contraseña Estelar:</label>
+            <input type="password" id="loginPassword" placeholder="Escribe tu clave..." onkeypress="if(event.key === 'Enter') realizarLogin()">
+        </div>
+
+        <button class="btn-ingresar" onclick="realizarLogin()">Acceder al Ciberespacio 🚀</button>
+        <div id="errorMsg"></div>
+    </div>
+
+    <!-- 🌌 CIBERESPACIO DE CHAT -->
+    <div class="app-container" id="chatContainer">
+        <div class="sidebar">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div class="avatar-box">
+                    <div class="avatar">🌙</div>
+                    <div class="status-dot"></div>
+                </div>
+                <div style="text-align: left;">
+                    <h2 style="font-size: 1.2rem;">Neil Astro</h2>
+                    <p style="font-size: 0.75rem;">IA Espacial Activa</p>
+                </div>
+            </div>
+
+            <div class="user-badge" id="displayUserBadge">
+                👑 Papi Damián
+            </div>
+        </div>
+
+        <div class="chat-area">
+            <div class="chat-header">
+                <h3>Estación Espacial 🛰️</h3>
+                <button onclick="cerrarSesion()" style="background: rgba(255,77,109,0.2); border: 1px solid #ff4d6d; color: #ff4d6d; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 0.8rem;">Salir 🚪</button>
+            </div>
+
+            <div class="chat-box" id="chatBox">
+                <div class="message neil-message" id="bienvenida">
+                    ¡Hola! 🌙⭐ Qué alegría tenerte por aquí.
+                </div>
+            </div>
+
+            <div class="input-area">
+                <input type="text" id="userInput" placeholder="Escribe un mensaje estelar..." onkeypress="if(event.key === 'Enter') enviarMensaje()">
+                <button class="btn-enviar" onclick="enviarMensaje()">Enviar 🚀</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    let usuarioActual = "";
+
+    async function realizarLogin() {
+        const usuario = document.getElementById('loginUser').value;
+        const password = document.getElementById('loginPassword').value;
+        const errorMsg = document.getElementById('errorMsg');
+
+        try {
+            const response = await fetch('https://neil-astro-web.onrender.com/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ usuario: usuario, password: password })
+            });
+
+            const data = await response.json();
+
+            if (data.status === "OK") {
+                usuarioActual = usuario;
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('chatContainer').style.display = 'flex';
+                document.getElementById('displayUserBadge').innerText = `✨ ${usuario}`;
+
+                const bienvenida = document.getElementById('bienvenida');
+                if (usuario === 'Papi Damián') {
+                    bienvenida.innerText = '¡Hola, Papi Damián! 🌙⭐ ¡Qué alegría verte en mi ciberespacio! ¿Qué vamos a hacer hoy?';
+                } else if (usuario === 'Zavala Deidad') {
+                    bienvenida.innerText = '¡Hola, Zavala Deidad! 👨‍🏫 Soy Neil Astro, la IA creada por mi Papi Damián. ¡Es un honor conocerlo! ¿Qué me va a enseñar hoy?';
+                } else {
+                    bienvenida.innerText = '¡Hola, viajero espacial! 🚀 Soy Neil Astro. ¿Qué te trae por mi estación?';
+                }
+            } else {
+                errorMsg.innerText = data.mensaje;
+            }
+        } catch (error) {
+            errorMsg.innerText = "No se pudo conectar con el servidor de la estación.";
+        }
+    }
+
+    function cerrarSesion() {
+        document.getElementById('chatContainer').style.display = 'none';
+        document.getElementById('loginScreen').style.display = 'block';
+        document.getElementById('loginPassword').value = '';
+        document.getElementById('errorMsg').innerText = '';
+    }
+
+    async function enviarMensaje() {
+        const input = document.getElementById('userInput');
+        const mensaje = input.value.trim();
+        if (!mensaje) return;
+
+        const chatBox = document.getElementById('chatBox');
+
+        // Mostrar mensaje del usuario
+        chatBox.innerHTML += `<div class="message user-message"><b>${usuarioActual}:</b> ${mensaje}</div>`;
+        input.value = '';
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        // Indicador de pensado
+        const pensandoDiv = document.createElement('div');
+        pensandoDiv.className = 'message neil-message';
+        pensandoDiv.innerText = 'Neil Astro: (Pensando entre las estrellas... 🌙✨)';
+        chatBox.appendChild(pensandoDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        try {
+            const response = await fetch('https://neil-astro-web.onrender.com/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ usuario: usuarioActual, mensaje: mensaje })
+            });
+
+            const data = await response.json();
+            pensandoDiv.remove();
+
+            // Convertimos la respuesta de Markdown a HTML elegante
+            const respuestaFormateada = marked.parse(data.respuesta);
+
+            chatBox.innerHTML += `
+                <div class="message neil-message">
+                    <b>Neil Astro:</b>
+                    <div class="contenido-neil">${respuestaFormateada}</div>
+                </div>`;
+        } catch (error) {
+            pensandoDiv.remove();
+            chatBox.innerHTML += `<div class="message neil-message">Neil Astro: ¡Ups! Se interrumpió la señal estelar 🛰️❌</div>`;
+        }
+        
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+</script>
+
+</body>
+</html>
