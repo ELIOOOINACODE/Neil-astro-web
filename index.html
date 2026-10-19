@@ -214,8 +214,8 @@
             if (!canvas || !container) return;
 
             const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(28, container.clientWidth / container.clientHeight, 0.1, 20);
-            camera.position.set(0, 1.32, 1.25); 
+            const camera = new THREE.PerspectiveCamera(30, container.clientWidth / container.clientHeight, 0.1, 20);
+            camera.position.set(0, 1.0, 1.25); 
 
             const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
             renderer.setSize(container.clientWidth, container.clientHeight);
@@ -319,9 +319,11 @@
                     document.getElementById('chatContainer').style.display = 'grid';
                     document.getElementById('displayUserBadge').innerText = `✨ Conectado como: ${usuario}`;
                     
-                    // 💌 Coloca el saludo personalizado retornado por el servidor
+                    // 💌 Saludo seguro y blindado para que nunca falle
+                    const saludoFinal = data.saludo || `¡Hola, ${usuario}! 🚂✨ ¡Qué alegría verte llegar de nuevo a la estación estelar! ¿Cómo estuvo tu día? 🌙💛🌿`;
+                    
                     const chatBox = document.getElementById('chatBox');
-                    chatBox.innerHTML = `<div class="message neil-message">${data.saludo}</div>`;
+                    chatBox.innerHTML = `<div class="message neil-message">${saludoFinal}</div>`;
 
                     setTimeout(cargarAvatar3D, 150);
                 } else {
