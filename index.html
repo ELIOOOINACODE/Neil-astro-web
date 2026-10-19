@@ -18,16 +18,14 @@
 
     <style>
         :root {
-            --bg-color-1: #fef9c3; /* Amarillo mantequilla suave */
-            --bg-color-2: #ccfbf1; /* Verde menta pastel */
+            --bg-color-1: #fef9c3; /* Amarillo mantequilla pastel */
+            --bg-color-2: #ccfbf1; /* Menta pastel */
             --bg-color-3: #e0f2fe; /* Azul cielo pastel */
-            --card-bg: rgba(255, 255, 255, 0.75);
-            --card-border: #99f6e4;
+            --card-bg: rgba(255, 255, 255, 0.8);
             --accent-yellow: #fde047;
             --accent-mint: #5eead4;
             --accent-sky: #38bdf8;
             --text-dark: #1e293b;
-            --text-muted: #475569;
         }
 
         body {
@@ -64,7 +62,7 @@
             width: 100%;
             padding: 14px;
             margin: 12px 0;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             border: 2px solid var(--accent-mint);
             border-radius: 14px;
             color: var(--text-dark);
@@ -108,13 +106,13 @@
         }
 
         /* Visor 3D del Avatar */
-       #avatar-column {
+        #avatar-column {
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             position: relative;
-            background: rgba(224, 242, 254, 0.5); /* Fondo azul cielo pastel suave */
+            background: rgba(224, 242, 254, 0.5);
             border-radius: 22px;
             border: 2px solid #7dd3fc;
             overflow: hidden;
@@ -134,7 +132,7 @@
         }
         #chatBox {
             flex: 1;
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.75);
             border: 2px solid #bae6fd;
             border-radius: 18px;
             padding: 15px;
@@ -185,7 +183,7 @@
         <div id="chat-column">
             <h3 id="displayUserBadge">✨ Bienvenido</h3>
             <div id="chatBox">
-                <div class="message neil-message">¡Hola, Papi Damián! 🚂✨ ¡Ya bajé completamente mis bracitos, tengo mis ojitos bien abiertos y me puse en colores pastel para ti! 🌙💛🌿</div>
+                <!-- El mensaje de saludo inicial se llena automáticamente según el usuario -->
             </div>
             <div class="chat-input-area">
                 <input type="text" id="mensajeInput" placeholder="Escribe algo bonito para Neil...">
@@ -215,17 +213,16 @@
             const container = document.getElementById('canvas-container');
             if (!canvas || !container) return;
 
-            // 🎯 Cámara enfocada directamente en su carita y cerquita
             const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(30, container.clientWidth / container.clientHeight, 0.1, 20);
-            camera.position.set(0, 1.0, 1.25); // ¡Y más bajito, Z más cerquita!
+            const camera = new THREE.PerspectiveCamera(28, container.clientWidth / container.clientHeight, 0.1, 20);
+            camera.position.set(0, 1.32, 1.25); 
 
             const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
             renderer.setSize(container.clientWidth, container.clientHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
             renderer.outputEncoding = THREE.sRGBEncoding;
 
-            // Iluminación muy brillante y suave pastel
+            // Iluminación suave y realista equilibrada
             const light = new THREE.DirectionalLight(0xffffff, 0.7);
             light.position.set(1.0, 1.5, 1.0).normalize();
             scene.add(light);
@@ -248,30 +245,19 @@
                         scene.add(vrm.scene);
                         vrm.scene.rotation.y = Math.PI;
 
-                        // 😊 Sonrisita muy sutil (0.2) para que mantenga sus ojitos 100% ABIERTOS
+                        // 😊 Sonrisita muy suave para mantener los ojos bien abiertos
                         if (vrm.expressionManager) {
                             vrm.expressionManager.setValue('happy', 0.2);
-                            vrm.expressionManager.setValue('blink', 0.0); // Ojos abiertos
+                            vrm.expressionManager.setValue('blink', 0.0);
                             vrm.expressionManager.update();
                         }
 
-                        // 🌸 Brazos 100% abajo y pegados al cuerpo de forma totalmente relajada
+                        // 🌸 Brazos relajados y caídos pegados al cuerpo
                         if (vrm.humanoid) {
                             const leftUpperArm = vrm.humanoid.getNormalizedBoneNode('leftUpperArm');
                             const rightUpperArm = vrm.humanoid.getNormalizedBoneNode('rightUpperArm');
-                            const leftLowerArm = vrm.humanoid.getNormalizedBoneNode('leftLowerArm');
-                            const rightLowerArm = vrm.humanoid.getNormalizedBoneNode('rightLowerArm');
-
-                            if (leftUpperArm) {
-                                leftUpperArm.rotation.z = 1.45; // Bajados por completo
-                                leftUpperArm.rotation.x = 0.0;
-                            }
-                            if (rightUpperArm) {
-                                rightUpperArm.rotation.z = -1.45; // Bajados por completo
-                                rightUpperArm.rotation.x = 0.0;
-                            }
-                            if (leftLowerArm) leftLowerArm.rotation.y = 0.0;
-                            if (rightLowerArm) rightLowerArm.rotation.y = 0.0;
+                            if (leftUpperArm) { leftUpperArm.rotation.z = 1.45; leftUpperArm.rotation.x = 0.0; }
+                            if (rightUpperArm) { rightUpperArm.rotation.z = -1.45; rightUpperArm.rotation.x = 0.0; }
                         }
                     }
                 },
@@ -293,7 +279,7 @@
                         const chest = humanoid.getNormalizedBoneNode('chest');
                         const head = humanoid.getNormalizedBoneNode('head');
 
-                        if (chest) chest.rotation.x = Math.sin(elapsedTime * 2) * 0.012; // Respiración suave
+                        if (chest) chest.rotation.x = Math.sin(elapsedTime * 2) * 0.012;
                         if (head) {
                             if (isPensando) {
                                 head.rotation.z = 0.12;
@@ -311,9 +297,14 @@
         }
 
         async function intentarLogin() {
-            const usuario = document.getElementById('userInput').value;
+            const usuario = document.getElementById('userInput').value.trim();
             const password = document.getElementById('passInput').value;
             const errorMsg = document.getElementById('errorMsg');
+
+            if (!usuario) {
+                errorMsg.innerText = "Por favor escribe tu nombre estelar.";
+                return;
+            }
 
             try {
                 const response = await fetch('https://neil-astro-web.onrender.com/login', {
@@ -327,6 +318,11 @@
                     document.getElementById('loginScreen').style.display = 'none';
                     document.getElementById('chatContainer').style.display = 'grid';
                     document.getElementById('displayUserBadge').innerText = `✨ Conectado como: ${usuario}`;
+                    
+                    // 💌 Coloca el saludo personalizado retornado por el servidor
+                    const chatBox = document.getElementById('chatBox');
+                    chatBox.innerHTML = `<div class="message neil-message">${data.saludo}</div>`;
+
                     setTimeout(cargarAvatar3D, 150);
                 } else {
                     errorMsg.innerText = data.mensaje || "Credenciales incorrectas.";
