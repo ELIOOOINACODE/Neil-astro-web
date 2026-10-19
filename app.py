@@ -69,7 +69,7 @@ def chat():
     mensaje_usuario = data.get("mensaje", "")
 
     if not mensaje_usuario:
-        return jsonify({"respuesta": "¡Uy! No escuché bien tu mensaje, ¿me lo repites? 🚂"})
+        return jsonify({"respuesta": f"Error interno: {str(e)}"})
 
     try:
         conn = sqlite3.connect(DB_NAME)
