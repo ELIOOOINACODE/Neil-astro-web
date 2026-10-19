@@ -226,11 +226,11 @@
             renderer.outputEncoding = THREE.sRGBEncoding;
 
             // Iluminación muy brillante y suave pastel
-            const light = new THREE.DirectionalLight(0xffffff, 1.1);
-            light.position.set(1.0, 1.0, 1.0).normalize();
+            const light = new THREE.DirectionalLight(0xffffff, 0.7);
+            light.position.set(1.0, 1.5, 1.0).normalize();
             scene.add(light);
             
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
             scene.add(ambientLight);
 
             const loader = new GLTFLoader();
