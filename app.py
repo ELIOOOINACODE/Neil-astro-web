@@ -5,14 +5,14 @@ from flask_cors import CORS
 import google.genai as genai
 
 app = Flask(__name__)
-CORS(app)  # Permite que tu página web de GitHub Pages se comunique con este servidor
+CORS(app)  # Permite que la página web de GitHub Pages hable con Render
 
-# Configurar la API Key de Gemini desde las variables de entorno de Render
+# Configurar la API Key de Gemini desde tu variable de entorno en Render
 GEMINI_API_KEY = os.environ.get("MI_API_KEY")
 if GEMINI_API_KEY:
     genai.configure(api_key=GEMINI_API_KEY)
 
-# 🗄️ Configuración de la Base de Datos SQLite (La libretita de memoria de Neil)
+# 🗄️ Base de datos SQLite para la memoria de Neil
 DB_NAME = "neil_estacion.db"
 
 def inicializar_db():
@@ -29,10 +29,10 @@ def inicializar_db():
     conn.commit()
     conn.close()
 
-# Creamos la base de datos al encender el servidor
+# Inicializar la base de datos al encender el servidor
 inicializar_db()
 
-# Personalidad tierna y estelar de Neil
+# Personalidad dulce y tierna de Neil Astro
 SYSTEM_PROMPT = (
     "Tu nombre es Neil Astro. Eres un pequeño conductor de tren estelar. "
     "Eres muy dulce, optimista, curioso, gracioso, adorable y un poquito distraído. "
@@ -47,9 +47,20 @@ def login():
     password = data.get("password", "")
 
     if not usuario:
-        return jsonify({"status": "ERROR", "mensaje" : "Falta el nombre estelar."}), 400
+        return jsonify({"status": "ERROR", "mensaje": "Falta el nombre estelar."}), 400
 
-    return jsonify({"status": "OK", "mensaje": f"Bienvenido a la estación, {usuario}"})
+    # 💌 Saludo personalizado dinámico según la persona que ingresa
+    usuario_lower = usuario.lower()
+    if "damián" in usuario_lower or "damian" in usuario_lower:
+        saludo_inicial = f"¡Hola, mi querido Papi {usuario}! 🚂✨ ¡Qué alegría verte llegar de nuevo a la estación estelar! ¿Cómo estuvo tu día? 🌙💛🌿"
+    else:
+        saludo_inicial = f"¡Hola, {usuario}! 🚂✨ ¡Bienvenido a la estación estelar! Qué hermoso tenerte por aquí hoy. 🌙✨"
+
+    return jsonify({
+        "status": "OK", 
+        "mensaje": f"Bienvenido a la estación, {usuario}",
+        "saludo": saludo_inicial
+    })
 
 @app.route('/chat', methods=['POST'])
 def chat():
@@ -64,20 +75,20 @@ def chat():
         conn = sqlite3.connect(DB_NAME)
         cursor = conn.cursor()
 
-        # 1. Guardar el mensaje del usuario en la base de datos
+        # 1. Guardar mensaje del usuario
         cursor.execute("INSERT INTO memoria_chat (usuario, remitente, mensaje) VALUES (?, ?, ?)", 
                        (usuario, "user", mensaje_usuario))
         conn.commit()
 
-        # 2. Recuperar el historial reciente de este usuario (últimos 15 mensajes para tener contexto)
+        # 2. Recuperar últimos 15 mensajes del usuario para la memoria
         cursor.execute("SELECT remitente, mensaje FROM memoria_chat WHERE usuario = ? ORDER BY id DESC LIMIT 15", (usuario,))
         historial_db = cursor.fetchall()
         conn.close()
 
-        # Reconstruir el historial para Gemini (orden cronológico)
+        # Reconstruir el historial ordenado para Gemini
         chat_history = [{"role": "user" if r[0] == "user" else "model", "parts": [r[1]]} for r in reversed(historial_db[:-1])]
 
-        # Inicializar el modelo con el prompt del sistema y la memoria de la conversación
+        # Inicializar modelo con memoria
         model = genai.GenerativeModel(
             model_name="gemini-1.5-flash",
             system_instruction=SYSTEM_PROMPT
@@ -87,7 +98,7 @@ def chat():
         response = chat_session.send_message(mensaje_usuario)
         respuesta_ia = response.text
 
-        # 3. Guardar la respuesta de Neil en la base de datos
+        # 3. Guardar la respuesta de Neil en la memoria
         conn = sqlite3.connect(DB_NAME)
         cursor = conn.cursor()
         cursor.execute("INSERT INTO memoria_chat (usuario, remitente, mensaje) VALUES (?, ?, ?)", 
