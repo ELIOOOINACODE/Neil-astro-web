@@ -110,7 +110,7 @@ def chat():
 
     except Exception as e:
         print(f"Error en el chat: {e}")
-        return jsonify({"respuesta": "¡Ay! Se me descarriló un vagón de ideas por un segundito. 🚂💨 ¿Me lo dices otra vez?"})
+        return jsonify({"respuesta": f"Error interno:{str(e)}"})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=10000)
