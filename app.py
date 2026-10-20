@@ -54,8 +54,8 @@ def login():
     # 💌 Arreglo para evitar el "Papi Papi Damián"
     usuario_lower = usuario.lower()
     if "damián" in usuario_lower or "damian" in usuario_lower:
-        nombre_mostrar = usuario if "papi" in usuario_lower else f"Papi {usuario}"
-        saludo_inicial = f"¡Hola, mi querido {nombre_mostrar}! 🚂✨ ¡Qué alegría verte llegar de nuevo a la estación estelar! ¿Cómo estuvo tu día? 🌙💛🌿"
+        nombre_mostrar = usuario if "papi" in usuario_lower else f"{usuario}"
+        saludo_inicial = f"¡Hola, mi querido {nombre_mostrar}! 🚂✨ ¡Qué alegría verte llegar de nuevo a la estación estelar! ¿Cómo estuvo tu día?"
     else:
         saludo_inicial = f"¡Hola, {usuario}! 🚂✨ ¡Bienvenido a la estación estelar! Qué hermoso tenerte por aquí hoy. 🌙✨"
 
@@ -98,9 +98,9 @@ def chat():
                 )
             )
 
-        # 🤖 Crear sesión de chat con google-genai y enviar mensaje
+        # Crear sesión de chat con google-genai y enviar mensaje
         chat_session = client.chats.create(
-            model="gemini-2.5-flash",
+            model="gemini-3.8-flash",
             history=chat_history,
             config=types.GenerateContentConfig(
                 system_instruction=SYSTEM_PROMPT
