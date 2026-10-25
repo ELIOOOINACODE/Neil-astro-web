@@ -97,8 +97,7 @@ def chat():
         # 🤖 Lista de modelos compatibles para intentar en orden (Respaldo inteligente)
         modelos_disponibles = [
             "llama-3.3-70b-versatile",
-            "llama-3.3-70b-specdec",
-            "llama3-70b-8192"
+            "llama-3.3-70b-specdec"
         ]
         
         respuesta_ia = None
