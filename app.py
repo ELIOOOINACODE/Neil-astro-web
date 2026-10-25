@@ -5,15 +5,13 @@ from flask_cors import CORS
 from groq import Groq
 
 app = Flask(__name__)
-CORS(app) # Permite que tu página web de GitHub Pages se conecte
+CORS(app)
 
 # 🔑 Tu API Key de Groq
-API_KEY_GROQ = "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"
+API_KEY_GROQ = "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"
 
-# Inicializamos el cliente de Groq
 client = Groq(api_key=API_KEY_GROQ)
 
-# 🗄️ Configuración de la Base de Datos SQLite en carpeta temporal de Render
 DB_NAME = "/tmp/neil_estacion.db"
 
 def inicializar_db():
@@ -30,10 +28,8 @@ def inicializar_db():
     conn.commit()
     conn.close()
 
-# Creamos la base de datos al encender el servidor
 inicializar_db()
 
-# Personalidad tierna y estelar de Neil
 SYSTEM_PROMPT = (
     "Tu nombre es Neil Astro. Eres un pequeño conductor de tren estelar. "
     "Eres muy dulce, optimista, curioso, gracioso, adorable y un poquito distraído. "
@@ -50,11 +46,10 @@ def login():
     if not usuario:
         return jsonify({"status": "ERROR", "mensaje": "Falta el nombre estelar."}), 400
 
-    # 💌 Saludo personalizado
     usuario_lower = usuario.lower()
     if "damián" in usuario_lower or "damian" in usuario_lower:
         nombre_mostrar = usuario if "papi" in usuario_lower else f"Papi {usuario}"
-        saludo_inicial = f"¡Hola, mi querido {nombre_mostrar}! 🚂✨ ¡Qué alegría verte llegar de nuevo a la estación estelar! ¿Cómo estuvo tu día?"
+        saludo_inicial = f"¡Hola, mi querido {nombre_mostrar}! 🚂✨ ¡Qué alegría verte llegar de nuevo a la estación estelar! ¿Cómo estuvo tu día? 🌙💛🌿"
     else:
         saludo_inicial = f"¡Hola, {usuario}! 🚂✨ ¡Bienvenido a la estación estelar! Qué hermoso tenerte por aquí hoy. 🌙✨"
 
@@ -74,19 +69,16 @@ def chat():
         return jsonify({"respuesta": "¡Uy! No escuché bien tu mensaje, ¿me lo repites? 🚂"})
 
     try:
-        # 1. Guardar mensaje del usuario en SQLite
         conn = sqlite3.connect(DB_NAME)
         cursor = conn.cursor()
         cursor.execute("INSERT INTO memoria_chat (usuario, remitente, mensaje) VALUES (?, ?, ?)", 
                        (usuario, "user", mensaje_usuario))
         conn.commit()
 
-        # 2. Recuperar últimos 15 mensajes del usuario para la memoria
         cursor.execute("SELECT remitente, mensaje FROM memoria_chat WHERE usuario = ? ORDER BY id DESC LIMIT 15", (usuario,))
         historial_db = cursor.fetchall()
         conn.close()
 
-        # Reconstruir el historial en formato de Groq
         mensajes_groq = [{"role": "system", "content": SYSTEM_PROMPT}]
         for r in reversed(historial_db[:-1]):
             role = "user" if r[0] == "user" else "assistant"
@@ -94,33 +86,16 @@ def chat():
             
         mensajes_groq.append({"role": "user", "content": mensaje_usuario})
 
-        # 🤖 Lista de modelos compatibles para intentar en orden (Respaldo inteligente)
-        modelos_disponibles = [
-            "llama-3.1-8b-instant"
-        ]
+        # 🤖 LLAMADA ÚNICA DIRECTA AL MODELO ACTUAL DE GROQ
+        completion = client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=mensajes_groq,
+            temperature=0.7,
+            max_tokens=1024,
+        )
         
-        respuesta_ia = None
-        ultimo_error = None
+        respuesta_ia = completion.choices[0].message.content
 
-        for modelo_nombre in modelos_disponibles:
-            try:
-                completion = client.chat.completions.create(
-                    model=modelo_nombre,
-                    messages=mensajes_groq,
-                    temperature=0.7,
-                    max_tokens=1024,
-                )
-                respuesta_ia = completion.choices[0].message.content
-                if respuesta_ia:
-                    break # ¡Si logró responder, sale del bucle de inmediato!
-            except Exception as err_m:
-                ultimo_error = err_m
-                continue
-
-        if not respuesta_ia:
-            raise Exception(f"No se pudo conectar con ningún modelo: {ultimo_error}")
-
-        # 3. Guardar la respuesta de Neil en la memoria SQLite
         conn = sqlite3.connect(DB_NAME)
         cursor = conn.cursor()
         cursor.execute("INSERT INTO memoria_chat (usuario, remitente, mensaje) VALUES (?, ?, ?)", 
