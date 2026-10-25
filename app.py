@@ -54,7 +54,7 @@ def login():
     usuario_lower = usuario.lower()
     if "damián" in usuario_lower or "damian" in usuario_lower:
         nombre_mostrar = usuario if "papi" in usuario_lower else f"Papi {usuario}"
-        saludo_inicial = f"¡Hola, mi querido {nombre_mostrar}! 🚂✨ ¡Qué alegría verte llegar de nuevo a la estación estelar! ¿Cómo estuvo tu día? 🌙💛🌿"
+        saludo_inicial = f"¡Hola, mi querido {nombre_mostrar}! 🚂✨ ¡Qué alegría verte llegar de nuevo a la estación estelar! ¿Cómo estuvo tu día?"
     else:
         saludo_inicial = f"¡Hola, {usuario}! 🚂✨ ¡Bienvenido a la estación estelar! Qué hermoso tenerte por aquí hoy. 🌙✨"
 
@@ -96,8 +96,7 @@ def chat():
 
         # 🤖 Lista de modelos compatibles para intentar en orden (Respaldo inteligente)
         modelos_disponibles = [
-            "llama-3.1-8b-instant",
-            "llama-3.3-70b-versatile"
+            "llama-3.1-8b-instant"
         ]
         
         respuesta_ia = None
